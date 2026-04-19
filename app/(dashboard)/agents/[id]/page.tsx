@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 
-export default function AgentIndexDetailPage({ params }: { params: { id: string } }) {
-  redirect(`/dashboard/agents/${params.id}`)
+export default async function AgentIndexDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  redirect(`/dashboard/agents/${id}`)
 }
