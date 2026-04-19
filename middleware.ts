@@ -10,12 +10,25 @@ const authMiddleware = withAuth({
 })
 
 export default function middleware(...args: Parameters<typeof authMiddleware>) {
+  const [req] = args
+
   if (!nextAuthSecret) {
     console.error(
-      '[middleware] NEXTAUTH_SECRET is not set. Skipping auth middleware. Configure NEXTAUTH_SECRET in environment variables.',
+      '[middleware] NEXTAUTH_SECRET is not set. Rejecting protected requests. Configure NEXTAUTH_SECRET in environment variables.',
     )
-    return NextResponse.next()
+
+    if (req.nextUrl.pathname.startsWith('/api/')) {
+      return NextResponse.json(
+        {
+          error: 'Server configuration error: NEXTAUTH_SECRET is not set',
+        },
+        { status: 503 },
+      )
+    }
+
+    return new NextResponse('Service unavailable', { status: 503 })
   }
+
   return authMiddleware(...args)
 }
 
