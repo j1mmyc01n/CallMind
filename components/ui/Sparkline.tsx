@@ -1,3 +1,5 @@
+'use client'
+
 import { Line, LineChart, ResponsiveContainer } from 'recharts'
 
 export function Sparkline({ data }: { data: number[] }) {

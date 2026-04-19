@@ -1,8 +1,12 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
+const nextAuthSecret =
+  process.env.NEXTAUTH_SECRET ??
+  (process.env.NODE_ENV === 'development' ? 'callmind-dev-secret' : undefined)
+
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET ?? 'callmind-dev-secret',
+  secret: nextAuthSecret,
   session: { strategy: 'jwt' },
   providers: [
     CredentialsProvider({
