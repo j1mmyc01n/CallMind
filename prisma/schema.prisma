@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String        @id @default(uuid())
+  email            String        @unique
+  name             String?
+  password         String
+  plan             String        @default("starter")
+  stripeCustomerId String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  agents           Agent[]
+  numbers          PhoneNumber[]
+  calls            Call[]
+  employees        Employee[]
+}
+
+model PhoneNumber {
+  id          String   @id @default(uuid())
+  userId      String
+  number      String   @unique
+  label       String
+  agentId     String?
+  forwardFrom String?
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+
+  user        User    @relation(fields: [userId], references: [id])
+  agent       Agent?  @relation(fields: [agentId], references: [id])
+  calls       Call[]
+}
+
+model Agent {
+  id            String        @id @default(uuid())
+  userId        String
+  name          String
+  voice         String        @default("aria")
+  model         String        @default("gpt-4o")
+  language      String        @default("en")
+  prompt        String        @db.Text
+  faq           String?       @db.Text
+  bookingRules  String?       @db.Text
+  retellAgentId String?
+  status        String        @default("active")
+  createdAt     DateTime      @default(now())
+
+  user          User          @relation(fields: [userId], references: [id])
+  numbers       PhoneNumber[]
+  calls         Call[]
+}
+
+model Call {
+  id           String      @id @default(uuid())
+  userId       String
+  agentId      String
+  numberId     String
+  employeeId   String?
+  callerPhone  String
+  callerName   String?
+  duration     Int         @default(0)
+  transcript   String?     @db.Text
+  summary      String?
+  sentiment    Int?
+  status       String      @default("answered")
+  recordingUrl String?
+  cost         Float       @default(0)
+  createdAt    DateTime    @default(now())
+
+  user         User        @relation(fields: [userId], references: [id])
+  agent        Agent       @relation(fields: [agentId], references: [id])
+  number       PhoneNumber @relation(fields: [numberId], references: [id])
+  employee     Employee?   @relation(fields: [employeeId], references: [id])
+}
+
+model Employee {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  role        String
+  email       String
+  calendarId  String?
+  calProvider String   @default("google")
+  maxPerDay   Int      @default(8)
+  routingMode String   @default("auto")
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  calls       Call[]
+}

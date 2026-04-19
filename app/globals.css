@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  background: #07080b;
+}
+
+.font-heading {
+  font-family: var(--font-syne), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.font-mono-data {
+  font-family: var(--font-jetbrains-mono), monospace;
+}
