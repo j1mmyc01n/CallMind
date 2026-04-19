@@ -1,8 +1,6 @@
 import { withAuth } from 'next-auth/middleware'
 
-const nextAuthSecret =
-  process.env.NEXTAUTH_SECRET ??
-  (process.env.NODE_ENV === 'development' ? 'callmind-dev-secret' : undefined)
+const nextAuthSecret = process.env.NEXTAUTH_SECRET ?? 'callmind-default-secret'
 
 export default withAuth({
   secret: nextAuthSecret,
